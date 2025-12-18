@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרז-יה</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Heebo', sans-serif; background: linear-gradient(135deg, #fff5f7 0%, #fce4ec 100%); color: #2d1b2e; padding: 12px; min-height: 100vh; }
+        .container { max-width: 480px; margin: 0 auto; }
+        .bsd { text-align: right; font-size: 0.8em; color: #8b7f8e; }
+        h1 { font-size: 2em; color: #f48fb1; text-align: center; margin-bottom: 3px; }
+        .subtitle { text-align: center; color: #8b7f8e; margin-bottom: 12px; font-size: 0.95em; }
+        .card { background: white; border-radius: 18px; padding: 15px; margin: 10px 0; box-shadow: 0 6px 20px rgba(244,143,177,0.2); border: 2px solid #ffe4e9; }
+        .tabs { display: flex; gap: 3px; margin-bottom: 10px; flex-wrap: wrap; }
+        .tab { flex: 1; padding: 8px 4px; border: none; border-radius: 10px; background: #ffe4e9; cursor: pointer; font-family: 'Heebo', sans-serif; font-weight: 600; font-size: 0.62em; color: #2d1b2e; min-width: 42px; }
+        .tab.active { background: #f48fb1; color: white; }
+        .section-title { color: #f48fb1; text-align: center; margin-bottom: 12px; font-size: 1.3em; font-weight: 700; }
+        .plate-container { position: relative; width: 240px; height: 260px; margin: 10px auto; }
+        .plate-labels { position: absolute; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+        .plate-label { font-size: 0.6em; padding: 2px 5px; border-radius: 5px; }
+        .veggies-label { background: rgba(152,216,200,0.4); }
+        .protein-label { background: rgba(244,143,177,0.4); }
+        .carbs-label { background: rgba(255,213,79,0.4); }
+        .cat-sec { margin: 8px 0; padding: 8px; background: #fff5f7; border-radius: 10px; }
+        .cat-title { font-weight: 600; margin-bottom: 6px; color: #f48fb1; cursor: pointer; font-size: 0.85em; }
+        .cat-note { font-size: 0.7em; color: #888; margin-bottom: 5px; }
+        .cat-items { display: flex; flex-wrap: wrap; gap: 3px; }
+        .food-btn { padding: 4px 7px; border: 1px solid #f48fb1; border-radius: 8px; background: #fff0f3; color: #2d1b2e; font-family: 'Heebo', sans-serif; font-size: 0.65em; cursor: pointer; font-weight: 500; }
+        .food-btn:active { background: #fce4ec; }
+        .food-list { margin: 10px 0; max-height: 80px; overflow-y: auto; }
+        .food-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: #fff5f7; border-radius: 6px; margin-bottom: 3px; font-size: 0.75em; }
+        .rm-btn { background: #ffcdd2; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; color: #c62828; font-size: 0.7em; }
+        .btn { padding: 8px 14px; background: #f48fb1; border: none; border-radius: 8px; color: white; font-family: 'Heebo', sans-serif; font-weight: 600; cursor: pointer; font-size: 0.8em; margin: 3px; }
+        .btn-small { padding: 5px 10px; font-size: 0.7em; }
+        .btn-outline { background: white; color: #f48fb1; border: 1px solid #f48fb1; }
+        .analysis { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 10px; padding: 10px; margin: 10px 0; text-align: center; display: none; }
+        .calories { font-size: 1.4em; font-weight: 700; color: #f48fb1; }
+        .section { background: #fff5f7; border-radius: 10px; padding: 10px; margin: 10px 0; }
+        .section h3 { color: #f48fb1; margin-bottom: 8px; font-size: 0.9em; }
+        .input-grp { margin: 6px 0; }
+        .input-grp label { display: block; margin-bottom: 3px; font-size: 0.8em; font-weight: 600; }
+        .input-grp input, .input-grp textarea, .input-grp select { width: 100%; padding: 7px; border: 2px solid #ffe4e9; border-radius: 8px; font-family: 'Heebo', sans-serif; font-size: 0.9em; }
+        .input-grp textarea { resize: vertical; min-height: 60px; }
+        .result { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 8px; padding: 8px; margin: 6px 0; text-align: center; display: none; }
+        .result-val { font-size: 1.4em; font-weight: 700; color: #1976d2; }
+        .result-lbl { font-size: 0.75em; color: #666; }
+        .tip { background: linear-gradient(135deg, #fff9c4, #fff59d); border-radius: 10px; padding: 10px; margin: 8px 0; border-right: 3px solid #ffd54f; position: relative; }
+        .tip-title { font-weight: 700; color: #f57f17; margin-bottom: 4px; font-size: 0.85em; }
+        .tip-text { font-size: 0.8em; }
+        .recipe { background: white; border-radius: 10px; padding: 12px; margin: 10px 0; border: 1px solid #ffe4e9; }
+        .recipe-title { font-weight: 600; color: #f48fb1; margin-bottom: 5px; font-size: 0.95em; }
+        .recipe-cal { font-size: 0.75em; color: #98d8c8; font-weight: 600; margin-bottom: 8px; }
+        .recipe-section { font-weight: 600; color: #666; font-size: 0.8em; margin: 8px 0 4px 0; }
+        .recipe-text { font-size: 0.8em; line-height: 1.5; }
+        .recipe-cat { display: inline-block; background: #f48fb1; color: white; padding: 2px 6px; border-radius: 5px; font-size: 0.65em; margin-bottom: 5px; }
+        canvas { max-width: 100%; }
+        .circles { display: flex; justify-content: center; gap: 12px; margin: 8px 0; }
+        .circle { width: 60px; height: 60px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8em; }
+        .waist-c { background: linear-gradient(135deg, #ffccbc, #ff8a65); }
+        .hip-c { background: linear-gradient(135deg, #b2dfdb, #4db6ac); }
+        .water-tracker { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin: 10px 0; }
+        .water-cup { width: 35px; height: 45px; border: 2px solid #64b5f6; border-radius: 0 0 8px 8px; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; background: white; transition: all 0.3s; }
+        .water-cup.filled { background: linear-gradient(to top, #64b5f6 100%, transparent 100%); }
+        .water-cup span { font-size: 0.7em; margin-bottom: 2px; }
+        .water-count { text-align: center; font-weight: 600; color: #1976d2; margin-top: 5px; }
+        .cat-filter { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+        .cat-filter-btn { padding: 4px 8px; border: none; border-radius: 8px; background: #ffe4e9; color: #2d1b2e; font-size: 0.65em; cursor: pointer; font-family: 'Heebo', sans-serif; }
+        .cat-filter-btn.active { background: #f48fb1; color: white; }
+        .note-hint { font-size: 0.7em; color: #888; font-style: italic; margin: 5px 0; padding: 5px; background: #fff9c4; border-radius: 5px; }
+        .meal-section { background: #fff5f7; border-radius: 10px; padding: 10px; margin: 8px 0; position: relative; }
+        .meal-title { font-weight: 600; color: #f48fb1; font-size: 0.85em; margin-bottom: 5px; }
+        .meal-items { min-height: 30px; font-size: 0.75em; color: #666; }
+        .meal-delete { position: absolute; top: 8px; left: 8px; }
+        .share-btns { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin: 10px 0; }
+        .memo-note { background: #fffef0; border: 1px solid #f5f5dc; border-radius: 8px; padding: 10px; margin: 8px 0; position: relative; }
+        .memo-note textarea { width: 100%; border: none; background: transparent; font-family: 'Heebo', sans-serif; font-size: 0.85em; resize: vertical; min-height: 150px; line-height: 1.8em; background-image: repeating-linear-gradient(transparent, transparent 1.7em, #e0e0e0 1.7em, #e0e0e0 1.75em); }
+        .memo-note textarea:focus { outline: none; }
+        .personal-item { background: #fff5f7; border-radius: 8px; padding: 8px; margin: 5px 0; font-size: 0.8em; display: flex; justify-content: space-between; align-items: flex-start; }
+        .personal-item-content { flex: 1; }
+        .chart-container { background: white; border-radius: 10px; padding: 15px; margin: 10px 0; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; border-radius: 15px; padding: 20px; max-width: 95%; width: 400px; max-height: 85vh; overflow-y: auto; direction: rtl; }
+        .modal-title { color: #f48fb1; margin-bottom: 15px; text-align: center; }
+        .modal-close { display: block; width: 100%; padding: 12px; background: #f48fb1; color: white; border: none; border-radius: 10px; font-family: 'Heebo', sans-serif; font-size: 1em; font-weight: 600; cursor: pointer; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bsd">בס"ד</div>
+        <h1>🥗 הרז-יה</h1>
+        <p class="subtitle">הדרך הקלה לאכילה נכונה</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('plate',this)">🍽️ צלחת</button>
+            <button class="tab" onclick="showTab('menu',this)">📋 תפריטים</button>
+            <button class="tab" onclick="showTab('calc',this)">📊 מחשבון</button>
+            <button class="tab" onclick="showTab('progress',this)">📈 התקדמות</button>
+            <button class="tab" onclick="showTab('recipes',this)">🍳 מתכונים</button>
+            <button class="tab" onclick="showTab('tips',this)">💡 טיפים</button>
+            <button class="tab" onclick="showTab('journal',this)">📝 רשימות</button>
+        </div>
+        
+        <!-- PLATE TAB -->
+        <div id="plate-tab" class="card">
+            <div class="section-title">הצלחת שלי</div>
+            
+            <div class="meal-section">
+                <div class="meal-title">🍽️ בחירת ארוחה:</div>
+                <div class="cat-filter">
+                    <button class="cat-filter-btn active" onclick="selectMeal('בוקר',this)">🌅 בוקר</button>
+                    <button class="cat-filter-btn" onclick="selectMeal('ביניים1',this)">🍎 ביניים</button>
+                    <button class="cat-filter-btn" onclick="selectMeal('צהריים',this)">☀️ צהריים</button>
+                    <button class="cat-filter-btn" onclick="selectMeal('ביניים2',this)">🥜 ביניים</button>
+                    <button class="cat-filter-btn" onclick="selectMeal('ערב',this)">🌙 ערב</button>
+                </div>
+            </div>
+            
+            <div class="plate-container" id="plateContainer">
+                <svg viewBox="0 0 260 260" style="width:100%;height:220px;">
+                    <defs><radialGradient id="bowl" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#fafafa"/><stop offset="100%" stop-color="#e8e8e8"/></radialGradient></defs>
+                    <circle cx="130" cy="130" r="125" fill="#f5f5f5" stroke="#f48fb1" stroke-width="3"/>
+                    <circle cx="130" cy="130" r="120" fill="none" stroke="#fce4ec" stroke-width="6" stroke-dasharray="8,4"/>
+                    <circle cx="130" cy="130" r="108" fill="url(#bowl)"/>
+                    <circle cx="130" cy="130" r="100" fill="#fafafa"/>
+                    <line x1="130" y1="30" x2="130" y2="230" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="5,3"/>
+                    <line x1="130" y1="130" x2="230" y2="130" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="5,3"/>
+                    <path d="M 130 130 L 130 30 A 100 100 0 0 0 30 130 Z" fill="rgba(152,216,200,0.15)"/>
+                    <path d="M 130 130 L 30 130 A 100 100 0 0 0 130 230 Z" fill="rgba(152,216,200,0.15)"/>
+                    <path d="M 130 130 L 130 30 A 100 100 0 0 1 230 130 Z" fill="rgba(244,143,177,0.15)"/>
+                    <path d="M 130 130 L 230 130 A 100 100 0 0 1 130 230 Z" fill="rgba(255,213,79,0.15)"/>
+                </svg>
+                <svg id="foodDisp" viewBox="0 0 260 260" style="position:absolute;top:0;left:0;width:100%;height:220px;pointer-events:none;"></svg>
+                <div class="plate-labels">
+                    <span class="plate-label veggies-label">🥬 ירקות 50%</span>
+                    <span class="plate-label protein-label">🍗 חלבון 25%</span>
+                    <span class="plate-label carbs-label">🍚 פחמימה 25%</span>
+                </div>
+            </div>
+            
+            <div class="cat-sec"><div class="cat-title" onclick="toggle('veg')">🥬 ירקות ▼</div><div class="cat-note">מנה = כוס</div><div id="veg" class="cat-items">
+                <button class="food-btn" onclick="add('🥬','חסה','ירקות',15)">🥬 חסה 15</button>
+                <button class="food-btn" onclick="add('🍅','עגבנייה','ירקות',22)">🍅 עגבנייה 22</button>
+                <button class="food-btn" onclick="add('🥒','מלפפון','ירקות',16)">🥒 מלפפון 16</button>
+                <button class="food-btn" onclick="add('🧅','בצל','ירקות',40)">🧅 בצל 40</button>
+                <button class="food-btn" onclick="add('🥕','גזר','ירקות',41)">🥕 גזר 41</button>
+                <button class="food-btn" onclick="add('🥦','ברוקולי','ירקות',55)">🥦 ברוקולי 55</button>
+                <button class="food-btn" onclick="add('🫑','פלפל','ירקות',30)">🫑 פלפל 30</button>
+                <button class="food-btn" onclick="add('🍆','חציל','ירקות',35)">🍆 חציל 35</button>
+                <button class="food-btn" onclick="add('🥒','קישוא','ירקות',17)">🥒 קישוא 17</button>
+                <button class="food-btn" onclick="add('🌱','נבטים','ירקות',31)">🌱 נבטים 31</button>
+                <button class="food-btn" onclick="add('🍄','פטריות','ירקות',22)">🍄 פטריות 22</button>
+            </div></div>
+            
+            <div class="cat-sec"><div class="cat-title" onclick="toggle('prot')">🍗 חלבון ▼</div><div class="cat-note">מנה = 150-200 גרם</div><div id="prot" class="cat-items">
+                <button class="food-btn" onclick="add('🍗','עוף','חלבון',165)">🍗 עוף 165</button>
+                <button class="food-btn" onclick="add('🦃','הודו','חלבון',135)">🦃 הודו 135</button>
+                <button class="food-btn" onclick="add('🥩','בשר','חלבון',250)">🥩 בשר 250</button>
+                <button class="food-btn" onclick="add('🐟','סלמון','חלבון',208)">🐟 סלמון 208</button>
+                <button class="food-btn" onclick="add('🐠','דג','חלבון',130)">🐠 דג 130</button>
+                <button class="food-btn" onclick="add('🥚','ביצה','חלבון',78)">🥚 ביצה 78</button>
+                <button class="food-btn" onclick="add('🧀','צהובה','חלבון',113)">🧀 צהובה 113</button>
+                <button class="food-btn" onclick="add('🧈','לבנה','חלבון',98)">🧈 לבנה 98</button>
+                <button class="food-btn" onclick="add('🧀','בולגרית','חלבון',75)">🧀 בולגרית 75</button>
+                <button class="food-btn" onclick="add('🥛','יוגורט','חלבון',100)">🥛 יוגורט 100</button>
+                <button class="food-btn" onclick="add('🥛','קוטג׳','חלבון',98)">🥛 קוטג׳ 98</button>
+            </div></div>
+            
+            <div class="cat-sec"><div class="cat-title" onclick="toggle('carb')">🍚 פחמימות ▼</div><div class="cat-note">מנה = חצי כוס מבושל / פרוסה</div><div id="carb" class="cat-items">
+                <button class="food-btn" onclick="add('🍚','אורז','פחמימה',130)">🍚 אורז 130</button>
+                <button class="food-btn" onclick="add('🍝','פסטה','פחמימה',131)">🍝 פסטה 131</button>
+                <button class="food-btn" onclick="add('🥔','תפו״א','פחמימה',77)">🥔 תפו״א 77</button>
+                <button class="food-btn" onclick="add('🍠','בטטה','פחמימה',86)">🍠 בטטה 86</button>
+                <button class="food-btn" onclick="add('🎃','דלעת','פחמימה',26)">🎃 דלעת 26</button>
+                <button class="food-btn" onclick="add('🍞','לחם קל','פחמימה',45)">🍞 לחם קל 45</button>
+                <button class="food-btn" onclick="add('🍞','לחם לבן','פחמימה',79)">🍞 לחם לבן 79</button>
+                <button class="food-btn" onclick="add('🥙','פיתה','פחמימה',165)">🥙 פיתה 165</button>
+                <button class="food-btn" onclick="add('🥖','בגט','פחמימה',140)">🥖 בגט 140</button>
+                <button class="food-btn" onclick="add('🍞','חלה','פחמימה',160)">🍞 חלה 160</button>
+                <button class="food-btn" onclick="add('🫓','טורטיה','פחמימה',120)">🫓 טורטיה 120</button>
+            </div></div>
+            
+            <div class="cat-sec"><div class="cat-title" onclick="toggle('fat')">🥑 שומן בריא ▼</div><div class="cat-note">מנה = כף</div><div id="fat" class="cat-items">
+                <button class="food-btn" onclick="add('🥑','אבוקדו','שומן',160)">🥑 אבוקדו 160</button>
+                <button class="food-btn" onclick="add('🥄','שמן זית','שומן',119)">🥄 שמן זית 119</button>
+                <button class="food-btn" onclick="add('🥄','טחינה','שומן',89)">🥄 טחינה 89</button>
+                <button class="food-btn" onclick="add('🫒','זיתים','שומן',36)">🫒 זיתים 36</button>
+                <button class="food-btn" onclick="add('🥜','אגוזים','שומן',185)">🥜 אגוזים 185</button>
+                <button class="food-btn" onclick="add('🥜','שקדים','שומן',164)">🥜 שקדים 164</button>
+                <button class="food-btn" onclick="add('🧈','חמאה','שומן',102)">🧈 חמאה 102</button>
+            </div></div>
+            
+            <div class="cat-sec"><div class="cat-title" onclick="toggle('fruit')">🍎 פירות ▼</div><div class="cat-note">מנה = כוס / פרי בינוני</div><div id="fruit" class="cat-items">
+                <button class="food-btn" onclick="add('🍎','תפוח','פרי',95)">🍎 תפוח 95</button>
+                <button class="food-btn" onclick="add('🍌','בננה','פרי',105)">🍌 בננה 105</button>
+                <button class="food-btn" onclick="add('🥝','קיווי','פרי',42)">🥝 קיווי 42</button>
+                <button class="food-btn" onclick="add('🥭','מנגו','פרי',99)">🥭 מנגו 99</button>
+                <button class="food-btn" onclick="add('🍉','אבטיח','פרי',46)">🍉 אבטיח 46</button>
+                <button class="food-btn" onclick="add('🍊','תפוז','פרי',62)">🍊 תפוז 62</button>
+                <button class="food-btn" onclick="add('🍓','תות','פרי',49)">🍓 תות 49</button>
+            </div></div>
+            
+            <div class="food-list" id="foodList"></div>
+            
+            <div class="analysis" id="analysis">
+                <div style="font-weight:700;color:#2e7d32;margin-bottom:6px;">📊 ניתוח</div>
+                <div class="calories" id="totalCal">0 קלוריות</div>
+                <p id="analysisTxt" style="font-size:0.85em;"></p>
+            </div>
+            
+            <div style="text-align:center;">
+                <button class="btn" onclick="analyze()">🔍 ניתוח</button>
+                <button class="btn" onclick="clearAll()">🗑️ ניקוי</button>
+                <button class="btn" onclick="saveMeal()">💾 שמירה כתפריט</button>
+            </div>
+            
+            <div class="share-btns">
+                <button class="btn btn-small btn-outline" onclick="setMealReminder()">⏰ תזכורת</button>
+                <button class="btn btn-small btn-outline" onclick="showEmptyPlate()">⭕ צלחת ריקה</button>
+                <button class="btn btn-small btn-outline" onclick="showIcons()">🎨 אייקונים</button>
+            </div>
+        </div>
+        
+        <!-- MENU TAB -->
+        <div id="menu-tab" class="card" style="display:none;">
+            <div class="section-title">תפריטים יומיים</div>
+            
+            <div class="meal-section"><div class="meal-title">🌅 ארוחת בוקר</div><div class="meal-items" id="menu-בוקר">לא נבחרה ארוחה</div><button class="rm-btn meal-delete" onclick="clearSingleMeal('בוקר')">✕</button></div>
+            <div class="meal-section"><div class="meal-title">🍎 ארוחת ביניים (בוקר)</div><div class="meal-items" id="menu-ביניים1">לא נבחרה ארוחה</div><button class="rm-btn meal-delete" onclick="clearSingleMeal('ביניים1')">✕</button></div>
+            <div class="meal-section"><div class="meal-title">☀️ ארוחת צהריים</div><div class="meal-items" id="menu-צהריים">לא נבחרה ארוחה</div><button class="rm-btn meal-delete" onclick="clearSingleMeal('צהריים')">✕</button></div>
+            <div class="meal-section"><div class="meal-title">🥜 ארוחת ביניים (אחה״צ)</div><div class="meal-items" id="menu-ביניים2">לא נבחרה ארוחה</div><button class="rm-btn meal-delete" onclick="clearSingleMeal('ביניים2')">✕</button></div>
+            <div class="meal-section"><div class="meal-title">🌙 ארוחת ערב</div><div class="meal-items" id="menu-ערב">לא נבחרה ארוחה</div><button class="rm-btn meal-delete" onclick="clearSingleMeal('ערב')">✕</button></div>
+            
+            <div class="result" id="menuTotal" style="display:block;"><div class="result-val" id="menuTotalCal">0</div><div class="result-lbl">סה״כ קלוריות יומי</div></div>
+            
+            <div class="share-btns">
+                <button class="btn btn-small btn-outline" onclick="exportToExcel()">📊 אקסל</button>
+                <button class="btn btn-small" onclick="clearMenu()">🗑️ ניקוי</button>
+            </div>
+            
+            <div class="section" style="margin-top:15px;">
+                <h3>💧 מעקב שתיה יומי</h3>
+                <div class="water-tracker" id="waterTracker"></div>
+                <div class="water-count" id="waterCount">0/8 כוסות מים</div>
+                <button class="btn btn-small btn-outline" onclick="resetWater()" style="margin-top:10px;">🔄 איפוס</button>
+            </div>
+        </div>
+        
+        <!-- CALCULATOR TAB -->
+        <div id="calc-tab" class="card" style="display:none;">
+            <div class="section-title">מחשבון בריאות</div>
+            <div class="section"><h3>📏 חישוב BMI</h3>
+                <div class="input-grp"><label>גובה (ס״מ)</label><input type="number" id="height" placeholder="165" oninput="calcBMI()"></div>
+                <div class="input-grp"><label>משקל (ק״ג)</label><input type="number" id="weight" placeholder="70" oninput="calcBMI()"></div>
+                <div class="result" id="bmiRes"><div class="result-val" id="bmiVal">--</div><div class="result-lbl" id="bmiStat">BMI</div></div>
+            </div>
+            <div class="section"><h3>📐 יחס מותן-ירך</h3>
+                <div class="note-hint">💡 יחס אידאלי לנשים: מתחת ל-0.80 | לגברים: מתחת ל-0.90</div>
+                <div class="input-grp"><label>היקף מותן (ס״מ)</label><input type="number" id="waist" placeholder="80" oninput="calcWHR()"></div>
+                <div class="input-grp"><label>היקף ירך (ס״מ)</label><input type="number" id="hip" placeholder="100" oninput="calcWHR()"></div>
+                <div class="circles" id="whrCircles" style="display:none;"><div class="circle waist-c"><span id="waistD">--</span><small>מותן</small></div><div class="circle hip-c"><span id="hipD">--</span><small>ירך</small></div></div>
+                <div class="result" id="whrRes"><div class="result-val" id="whrVal">--</div><div class="result-lbl" id="whrStat">יחס מותן-ירך</div></div>
+            </div>
+        </div>
+        
+        <!-- PROGRESS TAB -->
+        <div id="progress-tab" class="card" style="display:none;">
+            <div class="section-title">מעקב התקדמות</div>
+            <div class="section"><h3>⚖️ יעד משקל</h3>
+                <div class="input-grp"><label>משקל נוכחי (ק״ג)</label><input type="number" id="startW" placeholder="75" oninput="calcProg()"></div>
+                <div class="input-grp"><label>משקל יעד (ק״ג)</label><input type="number" id="goalW" placeholder="65" oninput="calcProg()"></div>
+            </div>
+            <div class="result" id="diffRes"><div class="result-val" id="diffVal">--</div><div class="result-lbl">ק״ג להוריד</div></div>
+            <div id="chartBox" class="chart-container" style="display:none;">
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="color:#f48fb1;font-size:0.9em;">📅 תחזית ירידה במשקל</h3><button class="rm-btn" onclick="clearChart()">✕</button></div>
+                <canvas id="chart" height="180"></canvas>
+                <div id="timeline" style="text-align:center;margin-top:10px;font-weight:600;color:#f48fb1;font-size:0.85em;"></div>
+            </div>
+            <div class="tip"><div class="tip-title">💡 טיפ</div><div class="tip-text">ירידה בריאה: 0.5-1 ק״ג בשבוע</div></div>
+        </div>
+        
+        <!-- RECIPES TAB -->
+        <div id="recipes-tab" class="card" style="display:none;">
+            <div class="section-title">מתכונים בריאים</div>
+            <div class="section"><h3>➕ הוספת מתכון אישי</h3>
+                <div class="input-grp"><label>שם המתכון</label><input type="text" id="newRecipeName" placeholder="שם המתכון"></div>
+                <div class="input-grp"><label>קטגוריה</label><select id="newRecipeCat"><option value="בוקר">בוקר</option><option value="בשר">בשרי</option><option value="חלב">חלבי</option><option value="סלט">סלטים</option><option value="מאפה">מאפים</option><option value="קינוח">קינוחים</option></select></div>
+                <div class="input-grp"><label>מצרכים והכנה</label><textarea id="newRecipeText" placeholder="מצרכים ואופן ההכנה..."></textarea></div>
+                <div class="input-grp"><label>קלוריות למנה</label><input type="number" id="newRecipeCal" placeholder="250"></div>
+                <button class="btn" onclick="addPersonalRecipe()">➕ הוספה</button>
+            </div>
+            <div id="personalRecipes"></div>
+            <div class="cat-filter">
+                <button class="cat-filter-btn active" onclick="filterRecipes('all',this)">הכל</button>
+                <button class="cat-filter-btn" onclick="filterRecipes('בוקר',this)">🍳 בוקר</button>
+                <button class="cat-filter-btn" onclick="filterRecipes('בשר',this)">🍗 בשר</button>
+                <button class="cat-filter-btn" onclick="filterRecipes('חלב',this)">🥛 חלבי</button>
+                <button class="cat-filter-btn" onclick="filterRecipes('סלט',this)">🥗 סלטים</button>
+            </div>
+            
+            <div id="recipesContainer">
+                <div class="recipe" data-cat="בוקר"><span class="recipe-cat">🍳 בוקר</span><div class="recipe-title">🥞 פנקייק חלבון</div><div class="recipe-cal">כ-200 קל׳ | 15 דקות</div><div class="recipe-section">מצרכים:</div><div class="recipe-text">• 1 בננה בשלה • 2 ביצים • 2 כפות קמח שקדים • חצי כפית קינמון</div><div class="recipe-section">הכנה:</div><div class="recipe-text">1. מועכים בננה 2. מוסיפים ביצים וקמח 3. מטגנים 2-3 דקות מכל צד</div></div>
+                <div class="recipe" data-cat="בוקר"><span class="recipe-cat">🍳 בוקר</span><div class="recipe-title">🍳 שקשוקה קלה</div><div class="recipe-cal">כ-250 קל׳ | 20 דקות</div><div class="recipe-section">מצרכים:</div><div class="recipe-text">• 2 ביצים • 3 עגבניות • חצי בצל • שום • תבלינים</div><div class="recipe-section">הכנה:</div><div class="recipe-text">1. מטגנים בצל ושום 2. מוסיפים עגבניות 3. שוברים ביצים ומבשלים 5 דקות</div></div>
+                <div class="recipe" data-cat="בשר"><span class="recipe-cat">🍗 בשרי</span><div class="recipe-title">🦃 שווארמה הודו</div><div class="recipe-cal">כ-180 קל׳ | 25 דקות</div><div class="recipe-section">מצרכים:</div><div class="recipe-text">• 400 גרם חזה הודו • כמון • כורכום • פפריקה</div><div class="recipe-section">הכנה:</div><div class="recipe-text">1. מתבלים הודו 2. צולים במחבת 3-4 דקות מכל צד 3. פורסים</div></div>
+                <div class="recipe" data-cat="חלב"><span class="recipe-cat">🥛 חלבי</span><div class="recipe-title">🥗 סלט יווני</div><div class="recipe-cal">כ-220 קל׳ | 10 דקות</div><div class="recipe-section">מצרכים:</div><div class="recipe-text">• עגבניות • מלפפון • בצל סגול • גבינה בולגרית • זיתים</div><div class="recipe-section">הכנה:</div><div class="recipe-text">1. חותכים ירקות לקוביות 2. מוסיפים גבינה וזיתים 3. מתבלים</div></div>
+                <div class="recipe" data-cat="סלט"><span class="recipe-cat">🥗 סלטים</span><div class="recipe-title">🥗 סלט קינואה</div><div class="recipe-cal">כ-280 קל׳ | 25 דקות</div><div class="recipe-section">מצרכים:</div><div class="recipe-text">• חצי כוס קינואה • עגבניות שרי • מלפפון • נענע • לימון</div><div class="recipe-section">הכנה:</div><div class="recipe-text">1. מבשלים קינואה ומקררים 2. חותכים ירקות 3. מערבבים ומתבלים</div></div>
+            </div>
+        </div>
+        
+        <!-- TIPS TAB -->
+        <div id="tips-tab" class="card" style="display:none;">
+            <div class="section-title">טיפים להרז-יה</div>
+            <div class="section"><h3>➕ הוספת טיפ אישי</h3>
+                <div class="input-grp"><label>כותרת הטיפ</label><input type="text" id="newTipTitle" placeholder="כותרת"></div>
+                <div class="input-grp"><label>תוכן הטיפ</label><textarea id="newTipText" placeholder="תוכן הטיפ..."></textarea></div>
+                <button class="btn" onclick="addPersonalTip()">➕ הוספה</button>
+            </div>
+            <div id="personalTips"></div>
+            <div class="tip"><div class="tip-title">🍽️ צלחת קטנה</div><div class="tip-text">המוח חושב שאכלנו יותר כשהצלחת מלאה!</div></div>
+            <div class="tip"><div class="tip-title">🌈 צלחת צבעונית</div><div class="tip-text">צבעים שונים = ויטמינים שונים!</div></div>
+            <div class="tip"><div class="tip-title">🥤 כוס מים לפני</div><div class="tip-text">לשתות כוס מים 20 דקות לפני הארוחה</div></div>
+            <div class="tip"><div class="tip-title">🐢 לאכול לאט</div><div class="tip-text">ללעוס כל ביס 20 פעם!</div></div>
+            <div class="tip"><div class="tip-title">🥬 ירקות קודם!</div><div class="tip-text">תמיד להתחיל עם ירקות</div></div>
+        </div>
+        
+        <!-- JOURNAL TAB -->
+        <div id="journal-tab" class="card" style="display:none;">
+            <div class="section-title">רשימות אישיות</div>
+            <div class="memo-note"><textarea id="newJournalEntry" placeholder="חוויות, מחשבות, תחושות, הצלחות, רעיונות..."></textarea></div>
+            <div style="text-align:center;"><button class="btn" onclick="saveJournalEntry()">💾 שמירת רשימה</button><button class="btn btn-outline" onclick="addNewNote()">➕ הוספת משבצת</button></div>
+            <div id="journalEntries"></div>
+        </div>
+    </div>
+    
+    <!-- MODAL -->
+    <div id="modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">כותרת</h2>
+            <div id="modalBody"></div>
+            <p style="font-size:0.75em;color:#888;text-align:center;margin:10px 0;">📱 לחיצה ארוכה להעתקה או צילום מסך</p>
+            <button class="modal-close" onclick="closeModal()">✓ סגירה</button>
+        </div>
+    </div>
+    
+    <script>
+        var foods = [];
+        var waterCups = 0;
+        var currentMeal = 'בוקר';
+        var menuMeals = {'בוקר':{foods:[],cal:0},'ביניים1':{foods:[],cal:0},'צהריים':{foods:[],cal:0},'ביניים2':{foods:[],cal:0},'ערב':{foods:[],cal:0}};
+        var personalRecipes = [];
+        var personalTips = [];
+        var journalEntries = [];
+        var pos = {'ירקות':[{x:45,y:90},{x:65,y:115},{x:45,y:140},{x:75,y:160}],'חלבון':[{x:165,y:65},{x:190,y:85},{x:210,y:70}],'פחמימה':[{x:165,y:175},{x:190,y:195},{x:210,y:180}],'שומן':[{x:90,y:105},{x:100,y:150}],'פרי':[{x:130,y:70},{x:130,y:210}]};
+        
+        function loadData(){try{var s=localStorage.getItem('harazya_v3');if(s){var d=JSON.parse(s);if(d.menuMeals)menuMeals=d.menuMeals;if(d.personalRecipes)personalRecipes=d.personalRecipes;if(d.personalTips)personalTips=d.personalTips;if(d.journalEntries)journalEntries=d.journalEntries;renderMenu();renderPersonalRecipes();renderPersonalTips();renderJournal();}}catch(e){}}
+        function saveData(){try{localStorage.setItem('harazya_v3',JSON.stringify({menuMeals:menuMeals,personalRecipes:personalRecipes,personalTips:personalTips,journalEntries:journalEntries}));}catch(e){}}
+        
+        function initWater(){var c=document.getElementById('waterTracker');c.innerHTML='';for(var i=0;i<8;i++){var cup=document.createElement('div');cup.className='water-cup';cup.innerHTML='<span>💧</span>';(function(idx){cup.onclick=function(){toggleWater(idx);};})(i);c.appendChild(cup);}}
+        function toggleWater(idx){var cups=document.querySelectorAll('.water-cup');if(cups[idx].classList.contains('filled')){for(var i=idx;i<8;i++)cups[i].classList.remove('filled');waterCups=idx;}else{for(var i=0;i<=idx;i++)cups[i].classList.add('filled');waterCups=idx+1;}document.getElementById('waterCount').textContent=waterCups+'/8 כוסות מים';}
+        
+        function resetWater(){waterCups=0;var cups=document.querySelectorAll('.water-cup');for(var i=0;i<cups.length;i++)cups[i].classList.remove('filled');document.getElementById('waterCount').textContent='0/8 כוסות מים';}
+        
+        initWater();loadData();
+        
+        function showTab(id,btn){var cards=document.querySelectorAll('.card');for(var i=0;i<cards.length;i++)cards[i].style.display='none';var tabs=document.querySelectorAll('.tab');for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('active');document.getElementById(id+'-tab').style.display='block';btn.classList.add('active');}
+        function toggle(id){var el=document.getElementById(id);el.style.display=el.style.display==='none'?'flex':'none';}
+        function selectMeal(meal,btn){currentMeal=meal;var btns=document.querySelectorAll('.meal-section .cat-filter-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');btn.classList.add('active');foods=[];if(menuMeals[meal]&&menuMeals[meal].foods){for(var i=0;i<menuMeals[meal].foods.length;i++){var f=menuMeals[meal].foods[i];foods.push({emoji:f.emoji,name:f.name,cat:f.cat,cal:f.cal});}}render();}
+        function add(emoji,name,cat,cal){foods.push({emoji:emoji,name:name,cat:cat,cal:cal});render();}
+        function rm(i){foods.splice(i,1);render();}
+        function render(){var disp=document.getElementById('foodDisp');var svg='';var cnt={};for(var i=0;i<foods.length;i++){var f=foods[i];if(!cnt[f.cat])cnt[f.cat]=0;var positions=pos[f.cat]||pos['שומן'];var p=positions[cnt[f.cat]%positions.length];var ox=(Math.random()-0.5)*10;var oy=(Math.random()-0.5)*10;svg+='<text x="'+(p.x+ox)+'" y="'+(p.y+oy)+'" font-size="18" text-anchor="middle">'+f.emoji+'</text>';cnt[f.cat]++;}disp.innerHTML=svg;var list=document.getElementById('foodList');var html='';for(var i=0;i<foods.length;i++){html+='<div class="food-item"><span>'+foods[i].emoji+' '+foods[i].name+' ('+foods[i].cal+')</span><button class="rm-btn" onclick="rm('+i+')">✕</button></div>';}list.innerHTML=html;}
+        function analyze(){if(!foods.length){alert('יש להוסיף מאכלים!');return;}var total=0;var vegCount=0;for(var i=0;i<foods.length;i++){total+=foods[i].cal;if(foods[i].cat==='ירקות')vegCount++;}var vegP=(vegCount/foods.length)*100;var txt=vegP>=40?'👑 מצוין!':vegP>=25?'👍 לא רע!':'🥗 כדאי להוסיף ירקות';document.getElementById('totalCal').textContent=total+' קלוריות';document.getElementById('analysisTxt').textContent=txt;document.getElementById('analysis').style.display='block';}
+        function clearAll(){foods=[];render();document.getElementById('analysis').style.display='none';}
+        function saveMeal(){if(!foods.length){alert('יש להוסיף מאכלים קודם!');return;}var total=0;var fc=[];for(var i=0;i<foods.length;i++){total+=foods[i].cal;fc.push({emoji:foods[i].emoji,name:foods[i].name,cat:foods[i].cat,cal:foods[i].cal});}menuMeals[currentMeal]={foods:fc,cal:total};renderMenu();saveData();alert('✓ נשמר!');}
+        function renderMenu(){var totalCal=0;var meals=['בוקר','ביניים1','צהריים','ביניים2','ערב'];for(var i=0;i<meals.length;i++){var meal=meals[i];var el=document.getElementById('menu-'+meal);if(menuMeals[meal]&&menuMeals[meal].foods&&menuMeals[meal].foods.length>0){var names=[];for(var j=0;j<menuMeals[meal].foods.length;j++){names.push(menuMeals[meal].foods[j].emoji+' '+menuMeals[meal].foods[j].name);}el.innerHTML=names.join(', ')+'<br><strong>'+menuMeals[meal].cal+' קל׳</strong>';totalCal+=menuMeals[meal].cal;}else{el.innerHTML='לא נבחרה ארוחה';}}document.getElementById('menuTotalCal').textContent=totalCal;}
+        function clearSingleMeal(meal){menuMeals[meal]={foods:[],cal:0};renderMenu();saveData();}
+        function clearMenu(){menuMeals={'בוקר':{foods:[],cal:0},'ביניים1':{foods:[],cal:0},'צהריים':{foods:[],cal:0},'ביניים2':{foods:[],cal:0},'ערב':{foods:[],cal:0}};renderMenu();saveData();}
+        
+        // Modal functions
+        function openModal(title,body){document.getElementById('modalTitle').innerHTML=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').style.display='flex';}
+        function closeModal(){document.getElementById('modal').style.display='none';}
+        
+        function showEmptyPlate(){
+            var html='<div style="text-align:center;"><svg viewBox="0 0 260 260" style="width:280px;height:280px;max-width:100%;"><circle cx="130" cy="130" r="125" fill="#f5f5f5" stroke="#f48fb1" stroke-width="3"/><circle cx="130" cy="130" r="108" fill="#fafafa"/><line x1="130" y1="30" x2="130" y2="230" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="5,3"/><line x1="130" y1="130" x2="230" y2="130" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="5,3"/><path d="M 130 130 L 130 30 A 100 100 0 0 0 30 130 Z" fill="rgba(152,216,200,0.2)"/><path d="M 130 130 L 30 130 A 100 100 0 0 0 130 230 Z" fill="rgba(152,216,200,0.2)"/><path d="M 130 130 L 130 30 A 100 100 0 0 1 230 130 Z" fill="rgba(244,143,177,0.2)"/><path d="M 130 130 L 230 130 A 100 100 0 0 1 130 230 Z" fill="rgba(255,213,79,0.2)"/></svg><p style="margin-top:10px;">🥬 ירקות 50% | 🍗 חלבון 25% | 🍚 פחמימה 25%</p><p style="color:#888;font-size:0.85em;">הדביקו את האייקונים על הצלחת!</p></div>';
+            openModal('⭕ צלחת ריקה',html);
+        }
+        
+        function showIcons(){
+            var icons=['🥬','🍅','🥒','🧅','🥕','🥦','🫑','🍆','🌱','🍄','🍗','🦃','🥩','🐟','🐠','🥚','🧀','🧈','🥛','🍚','🍝','🥔','🍠','🎃','🍞','🥙','🥖','🫓','🥑','🥄','🫒','🥜','🍎','🍌','🥝','🥭','🍉','🍊','🍓'];
+            var html='<p style="text-align:center;color:#888;font-size:0.85em;margin-bottom:10px;">גזרו והדביקו על הצלחת!</p><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">';
+            for(var i=0;i<icons.length;i++){html+='<div style="font-size:2.2em;padding:8px;border:2px dashed #f48fb1;border-radius:8px;background:#fff5f7;">'+icons[i]+'</div>';}
+            html+='</div>';
+            openModal('🎨 אייקונים לגזירה',html);
+        }
+        
+        function showPlateForSave(){
+            if(!foods.length){alert('יש להוסיף מאכלים קודם!');return;}
+            var html='<div style="background:#fff5f7;padding:15px;border-radius:10px;line-height:1.8;">';
+            var total=0;
+            for(var i=0;i<foods.length;i++){html+=foods[i].emoji+' '+foods[i].name+' - '+foods[i].cal+' קל׳<br>';total+=foods[i].cal;}
+            html+='<hr style="border:1px dashed #f48fb1;margin:10px 0;"><strong>סה״כ: '+total+' קלוריות</strong></div>';
+            openModal('🍽️ הצלחת שלי',html);
+        }
+        
+        function showMenuForSave(){
+            var mealNames={'בוקר':'🌅 בוקר','ביניים1':'🍎 ביניים','צהריים':'☀️ צהריים','ביניים2':'🥜 ביניים','ערב':'🌙 ערב'};
+            var meals=['בוקר','ביניים1','צהריים','ביניים2','ערב'];
+            var html='<div style="background:#fff5f7;padding:15px;border-radius:10px;line-height:1.8;">';
+            var total=0;
+            for(var i=0;i<meals.length;i++){
+                var m=meals[i];
+                html+='<strong>'+mealNames[m]+'</strong><br>';
+                if(menuMeals[m]&&menuMeals[m].foods&&menuMeals[m].foods.length>0){
+                    for(var j=0;j<menuMeals[m].foods.length;j++){html+='  • '+menuMeals[m].foods[j].name+'<br>';}
+                    html+='  <em>'+menuMeals[m].cal+' קל׳</em><br>';
+                    total+=menuMeals[m].cal;
+                }else{html+='  (ריק)<br>';}
+                html+='<br>';
+            }
+            html+='<hr style="border:1px dashed #f48fb1;margin:10px 0;"><strong>סה״כ יומי: '+total+' קלוריות</strong></div>';
+            openModal('📋 התפריט היומי',html);
+        }
+        
+        function showRecipesForSave(){
+            if(!personalRecipes.length){alert('אין מתכונים אישיים');return;}
+            var html='<div style="background:#fff5f7;padding:15px;border-radius:10px;line-height:1.8;">';
+            for(var i=0;i<personalRecipes.length;i++){
+                var r=personalRecipes[i];
+                html+='<strong>📌 '+r.name+'</strong> ('+r.cal+' קל׳)<br>'+r.text+'<br><br>';
+            }
+            html+='</div>';
+            openModal('🍳 המתכונים שלי',html);
+        }
+        
+        function renderPersonalRecipes(){var c=document.getElementById('personalRecipes');if(!personalRecipes.length){c.innerHTML='';return;}var h='<h3 style="color:#f48fb1;margin:10px 0;">📌 המתכונים שלי</h3>';for(var i=0;i<personalRecipes.length;i++){h+='<div class="personal-item"><div class="personal-item-content"><strong>'+personalRecipes[i].name+'</strong> ('+personalRecipes[i].cal+' קל׳)<br><small>'+personalRecipes[i].text.substring(0,60)+'...</small></div><button class="rm-btn" onclick="removeRecipe('+i+')">✕</button></div>';}c.innerHTML=h;}
+        function addPersonalRecipe(){var n=document.getElementById('newRecipeName').value;var c=document.getElementById('newRecipeCat').value;var t=document.getElementById('newRecipeText').value;var cal=document.getElementById('newRecipeCal').value||'?';if(!n||!t){alert('יש למלא שם ותוכן');return;}personalRecipes.push({name:n,cat:c,text:t,cal:cal});renderPersonalRecipes();saveData();document.getElementById('newRecipeName').value='';document.getElementById('newRecipeText').value='';document.getElementById('newRecipeCal').value='';alert('✓ נשמר!');}
+        function removeRecipe(i){personalRecipes.splice(i,1);renderPersonalRecipes();saveData();}
+        function addPersonalTip(){var t=document.getElementById('newTipTitle').value;var tx=document.getElementById('newTipText').value;if(!t||!tx){alert('יש למלא כותרת ותוכן');return;}personalTips.push({title:t,text:tx});renderPersonalTips();saveData();document.getElementById('newTipTitle').value='';document.getElementById('newTipText').value='';alert('✓ נשמר!');}
+        function renderPersonalTips(){var c=document.getElementById('personalTips');if(!personalTips.length){c.innerHTML='';return;}var h='<h3 style="color:#f48fb1;margin:10px 0;">📌 הטיפים שלי</h3>';for(var i=0;i<personalTips.length;i++){h+='<div class="tip"><div class="tip-title">💡 '+personalTips[i].title+'</div><div class="tip-text">'+personalTips[i].text+'</div><button class="rm-btn" style="position:absolute;top:5px;left:5px;" onclick="removeTip('+i+')">✕</button></div>';}c.innerHTML=h;}
+        function removeTip(i){personalTips.splice(i,1);renderPersonalTips();saveData();}
+        function saveJournalEntry(){var t=document.getElementById('newJournalEntry').value;if(!t||t.trim()===''){alert('יש לכתוב משהו');return;}var d=new Date().toLocaleDateString('he-IL');var tm=new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});journalEntries.unshift({date:d,time:tm,text:t});renderJournal();saveData();document.getElementById('newJournalEntry').value='';alert('✓ נשמר!');}
+        function addNewNote(){var c=document.getElementById('journalEntries');c.insertAdjacentHTML('afterbegin','<div class="memo-note" style="margin-top:10px;"><textarea placeholder="רשימה חדשה..."></textarea></div>');}
+        function renderJournal(){var c=document.getElementById('journalEntries');if(!journalEntries.length){c.innerHTML='';return;}var h='<h3 style="color:#f48fb1;margin:10px 0;">📌 הרשימות שלי</h3>';for(var i=0;i<journalEntries.length;i++){h+='<div class="memo-note"><div style="font-size:0.7em;color:#888;margin-bottom:5px;">📅 '+journalEntries[i].date+' '+journalEntries[i].time+'</div><div style="font-size:0.85em;white-space:pre-wrap;">'+journalEntries[i].text+'</div><button class="rm-btn" style="position:absolute;top:5px;left:5px;" onclick="removeJournal('+i+')">✕</button></div>';}c.innerHTML=h;}
+        function removeJournal(i){journalEntries.splice(i,1);renderJournal();saveData();}
+        function calcBMI(){var h=parseFloat(document.getElementById('height').value)/100;var w=parseFloat(document.getElementById('weight').value);if(h&&w){var bmi=(w/(h*h)).toFixed(1);var st=bmi<18.5?'תת משקל':bmi<25?'תקין ✓':bmi<30?'עודף':'השמנה';document.getElementById('bmiVal').textContent=bmi;document.getElementById('bmiStat').textContent=st;document.getElementById('bmiRes').style.display='block';}}
+        function calcWHR(){var waist=parseFloat(document.getElementById('waist').value);var hip=parseFloat(document.getElementById('hip').value);if(waist&&hip){var whr=(waist/hip).toFixed(2);var st=whr<0.80?'נמוך ✓':whr<0.85?'בינוני':'גבוה';document.getElementById('waistD').textContent=waist;document.getElementById('hipD').textContent=hip;document.getElementById('whrVal').textContent=whr;document.getElementById('whrStat').textContent=st;document.getElementById('whrCircles').style.display='flex';document.getElementById('whrRes').style.display='block';}}
+        function calcProg(){var s=parseFloat(document.getElementById('startW').value);var g=parseFloat(document.getElementById('goalW').value);if(s&&g&&s>g){var d=(s-g).toFixed(1);document.getElementById('diffVal').textContent=d;document.getElementById('diffRes').style.display='block';document.getElementById('chartBox').style.display='block';setTimeout(function(){drawChart(s,g);},100);}}
+        function clearChart(){document.getElementById('chartBox').style.display='none';document.getElementById('diffRes').style.display='none';document.getElementById('startW').value='';document.getElementById('goalW').value='';}
+        function drawChart(start,goal){var canvas=document.getElementById('chart');var ctx=canvas.getContext('2d');canvas.width=canvas.offsetWidth*2;canvas.height=360;var diff=start-goal;var weeks=Math.ceil(diff/0.75);var months=Math.ceil(weeks/4.3);var w=canvas.width;var h=canvas.height;var pL=70,pR=30,pT=40,pB=60;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff5f7';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffe4e9';ctx.lineWidth=1;for(var i=0;i<=5;i++){var y=pT+(h-pT-pB)*i/5;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(w-pR,y);ctx.stroke();}ctx.strokeStyle='#f48fb1';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,h-pB);ctx.lineTo(w-pR,h-pB);ctx.stroke();var pts=[];var np=Math.min(months+1,13);for(var i=0;i<np;i++){var wt=start-(diff*i/months);if(wt<goal)wt=goal;var x=pL+((w-pL-pR)*i/(np-1));var y=pT+(h-pT-pB)*(start-wt)/diff;pts.push({x:x,y:y,wt:wt.toFixed(1),m:i});}ctx.beginPath();ctx.moveTo(pts[0].x,h-pB);for(var i=0;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.lineTo(pts[pts.length-1].x,h-pB);ctx.closePath();var grad=ctx.createLinearGradient(0,pT,0,h-pB);grad.addColorStop(0,'rgba(244,143,177,0.5)');grad.addColorStop(1,'rgba(244,143,177,0.1)');ctx.fillStyle=grad;ctx.fill();ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(var i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.strokeStyle='#f48fb1';ctx.lineWidth=4;ctx.stroke();for(var i=0;i<pts.length;i++){ctx.fillStyle='#ec407a';ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='white';ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,4,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#666';ctx.font='22px Heebo';ctx.textAlign='center';for(var i=0;i<pts.length;i++){if(i===0||i===pts.length-1||i%2===0)ctx.fillText('חודש '+pts[i].m,pts[i].x,h-20);}ctx.textAlign='right';for(var i=0;i<=4;i++){var wt=start-(diff*i/4);var y=pT+(h-pT-pB)*i/4;ctx.fillText(wt.toFixed(0)+' ק״ג',pL-10,y+7);}ctx.textAlign='center';ctx.fillStyle='#f48fb1';ctx.font='bold 20px Heebo';ctx.fillText(pts[0].wt+' ק״ג',pts[0].x,pts[0].y-18);ctx.fillText(pts[pts.length-1].wt+' ק״ג',pts[pts.length-1].x,pts[pts.length-1].y-18);document.getElementById('timeline').innerHTML='⏱️ תחזית: כ-'+weeks+' שבועות ('+months+' חודשים) להגעה ליעד';}
+        function prepareShare(type){
+            var text='🥗 הרז-יה\n\n';
+            if(type==='plate'){
+                if(!foods.length){alert('אין מאכלים!');return;}
+                text+='🍽️ הצלחת שלי:\n';
+                var total=0;
+                for(var i=0;i<foods.length;i++){text+=foods[i].emoji+' '+foods[i].name+' ('+foods[i].cal+')\n';total+=foods[i].cal;}
+                text+='\nסה״כ: '+total+' קלוריות';
+            }else if(type==='menu'){
+                text+='📋 התפריט היומי:\n\n';
+                var mealNames={'בוקר':'🌅 בוקר','ביניים1':'🍎 ביניים','צהריים':'☀️ צהריים','ביניים2':'🥜 ביניים','ערב':'🌙 ערב'};
+                var meals=['בוקר','ביניים1','צהריים','ביניים2','ערב'];
+                var total=0;
+                for(var i=0;i<meals.length;i++){var m=meals[i];if(menuMeals[m]&&menuMeals[m].foods&&menuMeals[m].foods.length>0){var names=[];for(var j=0;j<menuMeals[m].foods.length;j++){names.push(menuMeals[m].foods[j].name);}text+=mealNames[m]+': '+names.join(', ')+' ('+menuMeals[m].cal+')\n';total+=menuMeals[m].cal;}}
+                text+='\nסה״כ: '+total+' קלוריות';
+            }else if(type==='recipes'){
+                if(!personalRecipes.length){alert('אין מתכונים!');return;}
+                text+='🍳 המתכונים שלי:\n\n';
+                for(var i=0;i<personalRecipes.length;i++){text+=personalRecipes[i].name+' ('+personalRecipes[i].cal+')\n';}
+            }
+            
+            if(navigator.share){
+                navigator.share({
+                    title: 'הרז-יה',
+                    text: text
+                });
+            }else{
+                navigator.clipboard.writeText(text);
+                alert('הטקסט הועתק ללוח!');
+            }
+        }
+        
+        function setMealReminder(){
+            var html='<div style="text-align:center;">';
+            html+='<p style="margin-bottom:15px;font-weight:600;">⏰ בחירת תזכורות</p>';
+            html+='<div style="background:#fff5f7;padding:10px;border-radius:10px;margin-bottom:10px;">';
+            html+='<p style="font-weight:600;color:#f48fb1;margin-bottom:8px;">🍽️ ארוחות</p>';
+            html+='<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">';
+            html+='<button class="btn btn-small" onclick="scheduleReminder(\'בוקר\',\'07:30\')">🌅 בוקר 7:30</button>';
+            html+='<button class="btn btn-small" onclick="scheduleReminder(\'ביניים בוקר\',\'10:00\')">🍎 ביניים 10:00</button>';
+            html+='<button class="btn btn-small" onclick="scheduleReminder(\'צהריים\',\'13:00\')">☀️ צהריים 13:00</button>';
+            html+='<button class="btn btn-small" onclick="scheduleReminder(\'ביניים אחה״צ\',\'16:00\')">🥜 ביניים 16:00</button>';
+            html+='<button class="btn btn-small" onclick="scheduleReminder(\'ערב\',\'19:00\')">🌙 ערב 19:00</button>';
+            html+='</div></div>';
+            html+='<div style="background:#e3f2fd;padding:10px;border-radius:10px;margin-bottom:10px;">';
+            html+='<p style="font-weight:600;color:#1976d2;margin-bottom:8px;">💧 שתייה</p>';
+            html+='<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">';
+            html+='<button class="btn btn-small btn-outline" onclick="scheduleReminder(\'שתייה\',\'09:00\')" style="border-color:#64b5f6;color:#1976d2;">💧 9:00</button>';
+            html+='<button class="btn btn-small btn-outline" onclick="scheduleReminder(\'שתייה\',\'11:00\')" style="border-color:#64b5f6;color:#1976d2;">💧 11:00</button>';
+            html+='<button class="btn btn-small btn-outline" onclick="scheduleReminder(\'שתייה\',\'14:00\')" style="border-color:#64b5f6;color:#1976d2;">💧 14:00</button>';
+            html+='<button class="btn btn-small btn-outline" onclick="scheduleReminder(\'שתייה\',\'17:00\')" style="border-color:#64b5f6;color:#1976d2;">💧 17:00</button>';
+            html+='<button class="btn btn-small btn-outline" onclick="scheduleReminder(\'שתייה\',\'20:00\')" style="border-color:#64b5f6;color:#1976d2;">💧 20:00</button>';
+            html+='</div></div>';
+            html+='<div style="background:#fff9c4;padding:10px;border-radius:10px;">';
+            html+='<p style="font-weight:600;color:#f57f17;margin-bottom:8px;">⏱️ תזכורת מותאמת אישית</p>';
+            html+='<input type="time" id="customTime" style="padding:8px;border:2px solid #ffd54f;border-radius:8px;font-size:1em;margin-left:5px;">';
+            html+='<input type="text" id="customText" placeholder="טקסט התזכורת" style="padding:8px;border:2px solid #ffd54f;border-radius:8px;font-size:0.9em;width:120px;margin-top:5px;">';
+            html+='<button class="btn btn-small" onclick="scheduleCustomReminder()" style="background:#ffd54f;color:#333;margin-top:5px;">הגדרה</button>';
+            html+='</div>';
+            html+='<p style="font-size:0.75em;color:#888;margin-top:10px;">📱 יש להשאיר את הדף פתוח לקבלת תזכורות</p>';
+            html+='</div>';
+            openModal('⏰ תזכורות',html);
+        }
+        
+        function scheduleReminder(type,timeStr){
+            var parts=timeStr.split(':');
+            var h=parseInt(parts[0]);
+            var m=parseInt(parts[1]);
+            var now=new Date();
+            var reminder=new Date();
+            reminder.setHours(h,m,0,0);
+            if(reminder<=now)reminder.setDate(reminder.getDate()+1);
+            var delay=reminder.getTime()-now.getTime();
+            var msg=type==='שתייה'?'💧 הגיע הזמן לשתות כוס מים!':'🍽️ הגיע הזמן לארוחת '+type+'!';
+            setTimeout(function(){
+                alert(msg);
+                if('vibrate' in navigator)navigator.vibrate([200,100,200]);
+            },delay);
+            var timeDisplay=reminder.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+            alert('✓ תזכורת נקבעה!\n\n'+msg+'\nבשעה: '+timeDisplay);
+        }
+        
+        function scheduleCustomReminder(){
+            var timeInput=document.getElementById('customTime').value;
+            var textInput=document.getElementById('customText').value||'תזכורת';
+            if(!timeInput){alert('יש לבחור שעה');return;}
+            var parts=timeInput.split(':');
+            var h=parseInt(parts[0]);
+            var m=parseInt(parts[1]);
+            var now=new Date();
+            var reminder=new Date();
+            reminder.setHours(h,m,0,0);
+            if(reminder<=now)reminder.setDate(reminder.getDate()+1);
+            var delay=reminder.getTime()-now.getTime();
+            setTimeout(function(){
+                alert('⏰ '+textInput);
+                if('vibrate' in navigator)navigator.vibrate([200,100,200]);
+            },delay);
+            var timeDisplay=reminder.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+            alert('✓ תזכורת נקבעה!\n\n⏰ '+textInput+'\nבשעה: '+timeDisplay);
+            closeModal();
+        }
+        
+        function exportToExcel(){
+            var mealNames={'בוקר':'ארוחת בוקר','ביניים1':'ארוחת ביניים (בוקר)','צהריים':'ארוחת צהריים','ביניים2':'ארוחת ביניים (אחה״צ)','ערב':'ארוחת ערב'};
+            var meals=['בוקר','ביניים1','צהריים','ביניים2','ערב'];
+            var csv='\ufeffארוחה,מאכלים,קלוריות\n';
+            var total=0;
+            for(var i=0;i<meals.length;i++){var m=meals[i];var md=menuMeals[m];if(md&&md.foods&&md.foods.length>0){var names=[];for(var j=0;j<md.foods.length;j++){names.push(md.foods[j].name);}csv+=mealNames[m]+',"'+names.join(', ')+'",'+md.cal+'\n';total+=md.cal;}else{csv+=mealNames[m]+',-,0\n';}}
+            csv+='סה״כ,-,'+total+'\n';
+            var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+            var link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='תפריט_הרז-יה.csv';link.click();
+        }
+        
+        function filterRecipes(cat,btn){var btns=document.querySelectorAll('.cat-filter-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');btn.classList.add('active');var recipes=document.querySelectorAll('.recipe');for(var i=0;i<recipes.length;i++){if(cat==='all'||recipes[i].dataset.cat===cat){recipes[i].style.display='block';}else{recipes[i].style.display='none';}}}
+    </script>
+</body>
+</html>
