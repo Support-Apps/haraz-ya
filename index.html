@@ -12,6 +12,8 @@
         .bsd { text-align: right; font-size: 0.8em; color: #8b7f8e; }
         h1 { font-size: 2em; color: #f48fb1; text-align: center; margin-bottom: 3px; }
         .subtitle { text-align: center; color: #8b7f8e; margin-bottom: 12px; font-size: 0.95em; }
+        .inspiration-box { background: linear-gradient(135deg, #fff5f7, #fce4ec); border-radius: 12px; padding: 12px 15px; margin-bottom: 12px; text-align: center; border: 1px solid #f8bbd9; }
+        .inspiration-text { font-size: 0.85em; color: #ad1457; font-weight: 500; opacity: 1; transition: opacity 0.8s ease-in-out; }
         .card { background: white; border-radius: 18px; padding: 15px; margin: 10px 0; box-shadow: 0 6px 20px rgba(244,143,177,0.2); border: 2px solid #ffe4e9; }
         .tabs { display: flex; gap: 3px; margin-bottom: 10px; flex-wrap: wrap; }
         .tab { flex: 1; padding: 8px 4px; border: none; border-radius: 10px; background: #ffe4e9; cursor: pointer; font-family: 'Heebo', sans-serif; font-weight: 600; font-size: 0.62em; color: #2d1b2e; min-width: 42px; }
@@ -91,6 +93,10 @@
         <div class="bsd">בס"ד</div>
         <h1>🥗 הרז-יה</h1>
         <p class="subtitle">הדרך הקלה לאכילה נכונה</p>
+        
+        <div class="inspiration-box" id="inspirationBox">
+            <span class="inspiration-text" id="inspirationText">את רזה וחטובה ✨</span>
+        </div>
         
         <div class="tabs">
             <button class="tab active" onclick="showTab('plate',this)">🍽️ צלחת</button>
@@ -352,6 +358,36 @@
         var personalTips = [];
         var journalEntries = [];
         var pos = {'ירקות':[{x:45,y:90},{x:65,y:115},{x:45,y:140},{x:75,y:160}],'חלבון':[{x:165,y:65},{x:190,y:85},{x:210,y:70}],'פחמימה':[{x:165,y:175},{x:190,y:195},{x:210,y:180}],'שומן':[{x:90,y:105},{x:100,y:150}],'פרי':[{x:130,y:70},{x:130,y:210}]};
+        
+        var inspirations = [
+            "את רזה וחטובה ✨",
+            "עודפי השומן מתנדפים ממך 💨",
+            "את יפה וזוהרת 🌟",
+            "את נראית צעירה מתמיד 🌸",
+            "מה הסוד שלך? כולם שואלים 💕",
+            "הגוף שלך מושלם ומפוסל 👗",
+            "את מלאת אנרגיה וחיוניות ⚡",
+            "העור שלך זוהר ובריא 💎",
+            "את מרגישה קלילה כנוצה 🪶",
+            "הבגדים נראים עלייך מדהים 👠",
+            "את משדרת ביטחון ויופי 👑",
+            "הגוף שלך חזק וגמיש 💪",
+            "את הגרסה הכי טובה של עצמך 🦋",
+            "כולם מתפעלים מהמראה שלך 😍",
+            "את פשוט זוהרת מבפנים ומבחוץ ☀️"
+        ];
+        var currentInspiration = 0;
+        
+        function rotateInspiration(){
+            var textEl = document.getElementById('inspirationText');
+            textEl.style.opacity = '0';
+            setTimeout(function(){
+                currentInspiration = (currentInspiration + 1) % inspirations.length;
+                textEl.textContent = inspirations[currentInspiration];
+                textEl.style.opacity = '1';
+            }, 800);
+        }
+        setInterval(rotateInspiration, 8000);
         
         function loadData(){try{var s=localStorage.getItem('harazya_v3');if(s){var d=JSON.parse(s);if(d.menuMeals)menuMeals=d.menuMeals;if(d.personalRecipes)personalRecipes=d.personalRecipes;if(d.personalTips)personalTips=d.personalTips;if(d.journalEntries)journalEntries=d.journalEntries;renderMenu();renderPersonalRecipes();renderPersonalTips();renderJournal();}}catch(e){}}
         function saveData(){try{localStorage.setItem('harazya_v3',JSON.stringify({menuMeals:menuMeals,personalRecipes:personalRecipes,personalTips:personalTips,journalEntries:journalEntries}));}catch(e){}}
